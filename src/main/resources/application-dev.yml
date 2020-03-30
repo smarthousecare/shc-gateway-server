@@ -1,0 +1,31 @@
+level:
+  ROOT: ERROR
+  org.springframework.web: ERROR
+  liquibase: INFO
+
+spring:
+  profiles:
+    active: "dev"
+
+okta:
+  oauth2:
+    issuer: https://dev-958433.okta.com/oauth2/default
+    client-id: 0oa4u7s7jowBgKy6W4x6
+    client-secret: udX0cFsj3UsCznuiFbmE1M04U3_aEVIgSPdmgCL1
+    grant-type: client_credentials
+    access-token-uri: https://dev-958433.okta.com/oauth2/default/v1/token
+    user-authorization-uri: https://dev-958433.okta.com/oauth2default/v1/authorize
+    scope: openid profile email
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+zuul:
+  routes:
+    middleware:
+      path: /cart/**
+      url: http://localhost:8081/
