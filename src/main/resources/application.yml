@@ -1,25 +1,31 @@
 level:
-  ROOT: ERROR
-  org.springframework.web: ERROR
+  ROOT: DEBUG
+  org.springframework.web: DEBUG
   liquibase: INFO
 
 server:
   port: 8025
+  servlet:
+    session:
+      persistent: false
+  session:
+    cookie:
+      http-only: true
 
 ribbon:
   eureka:
     enabled: true
+  readTimeout: 60000
+
 
 zuul: # those values must be configured depending on the application specific needs
   host:
     max-total-connections: 1000
     max-per-route-connections: 100
-  ##        connect-timeout-millis: 70000
-  ##        socket-timeout-millis: 70000
+  #        connect-timeout-millis: 70000
+  #        socket-timeout-millis: 70000
   semaphore:
     max-semaphores: 500
-  prefix: /api #slash before and after
-  strip-prefix: true
 
 hystrix:
   command:
@@ -28,16 +34,10 @@ hystrix:
         isolation:
           thread:
             timeoutInMilliseconds: 60000
-  shareSecurityContext: true
-
-feign:
-  hystrix:
-    enabled: true
-
 
 management:
   security:
-    roles: SYSADMIN
+    roles: ADMIN
   context-path: /management
   health:
     mail:
@@ -47,7 +47,7 @@ eureka:
   instance:
     appname: gateway-api
     instanceId: ${spring.application.instance_id:${random.value}}
-    prefer-ip-address: true
+    prefer-ip-address: false
     lease-renewal-interval-in-seconds: 5
     lease-expiration-duration-in-seconds: 10
     status-page-url-path: ${management.context-path}/info
@@ -75,3 +75,13 @@ spring:
   main:
     allow-bean-definition-overriding: true
 
+springdoc:
+  api-docs:
+    groups:
+      enabled: true
+
+springfox:
+  documentation:
+    swagger:
+      v2:
+        path: /v3/api-docs

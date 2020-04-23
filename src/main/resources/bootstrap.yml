@@ -14,12 +14,19 @@ spring:
     active: dev,native
   cloud:
     config:
-      uri: http://localhost:8761/config
+      uri: http://admin:${shc.registry.password}@localhost:8761/config
       name: gateway-api
       profile: dev
       label: master
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+    loadbalancer:
+      ribbon:
+        enabled: false
 
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: http://admin:${shc.registry.password}@localhost:8761/eureka

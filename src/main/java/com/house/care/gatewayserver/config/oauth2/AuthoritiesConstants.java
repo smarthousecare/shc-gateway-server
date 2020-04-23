@@ -1,4 +1,4 @@
-package com.house.care.gatewayserver.config;
+package com.house.care.gatewayserver.config.oauth2;
 
 /**
  * Constants for Spring Security authorities.

@@ -1,18 +1,15 @@
 package com.house.care.gatewayserver.config;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
-import org.springframework.stereotype.Component;
 
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 
-@Component
 public class UserFeignClientInterceptor implements RequestInterceptor {
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
@@ -37,11 +34,5 @@ public class UserFeignClientInterceptor implements RequestInterceptor {
 
         OAuth2AccessToken accessToken = client.getAccessToken();
         template.header(AUTHORIZATION_HEADER, String.format("%s %s", BEARER_TOKEN_TYPE, accessToken.getTokenValue()));
-    }
-
-    @Bean
-    public RequestInterceptor getUserFeignClientInterceptor(OAuth2AuthorizedClientService clientService) {
-
-        return new UserFeignClientInterceptor(clientService);
     }
 }

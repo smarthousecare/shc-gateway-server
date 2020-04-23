@@ -1,7 +1,16 @@
 package com.house.care.gatewayserver.service;
 
+import java.time.Instant;
+import java.util.Objects;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsResourceDetails;
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -21,7 +30,10 @@ public class OktaService {
     private static final String SCOPE = "access";
 
     @Autowired
-    ClientCredentialsResourceDetails clientCredentialsResourceDetails;
+    private ClientCredentialsResourceDetails clientCredentialsResourceDetails;
+
+    @Autowired
+    private OAuth2AuthorizedClientService clientService;
 
     public AuthenticationTokenDTO authenticateOkta() {
 
@@ -38,5 +50,28 @@ public class OktaService {
                 AuthenticationTokenDTO.class);
         log.trace("AUTHENTICATION TOKEN = {}", authenticationToken);
         return authenticationToken;
+    }
+
+    public String getCurrentAuthenticationToken() {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
+        if (oauthToken != null) {
+            OAuth2AuthorizedClient client = clientService.loadAuthorizedClient(
+                    oauthToken.getAuthorizedClientRegistrationId(),
+                    oauthToken.getName());
+
+            OAuth2AccessToken accessToken = client.getAccessToken();
+            if (accessToken == null || Instant.now().isBefore(Objects.requireNonNull(accessToken.getExpiresAt()))) {
+                AuthenticationTokenDTO authenticationTokenDTO = authenticateOkta();
+                return authenticationTokenDTO.getAccessToken();
+            }
+            else {
+                return accessToken.getTokenValue();
+            }
+        }
+        else {
+            return null;
+        }
     }
 }
