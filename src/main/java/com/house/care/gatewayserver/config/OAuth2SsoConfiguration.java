@@ -9,7 +9,9 @@ import org.springframework.cloud.client.loadbalancer.RestTemplateCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
@@ -30,6 +32,22 @@ public class OAuth2SsoConfiguration extends WebSecurityConfigurerAdapter {
     public OAuth2SsoConfiguration(@Qualifier("authorizationHeaderRequestMatcher") RequestMatcher authorizationHeaderRequestMatcher) {
 
         this.authorizationHeaderRequestMatcher = authorizationHeaderRequestMatcher;
+    }
+
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+
+        web.ignoring()
+                .antMatchers("/ext/*/api/**") // allow calls to services,
+                                              // redirect by zuul
+                .antMatchers(HttpMethod.OPTIONS, "/**")
+                .antMatchers("/app/**/*.{js,html}")
+                .antMatchers("/i18n/**")
+                .antMatchers("/content/**")
+                .antMatchers("/swagger-ui/index.html")
+                .antMatchers("/test/**");
+        // redirect by zuul
+
     }
 
     @Override
@@ -57,17 +75,6 @@ public class OAuth2SsoConfiguration extends WebSecurityConfigurerAdapter {
                 .oauth2ResourceServer().jwt();
     }
 
-    // @Bean
-    // public FilterRegistrationBean<OAuth2ClientContextFilter>
-    // oauth2ClientFilterRegistration(OAuth2ClientContextFilter filter) {
-    //
-    // FilterRegistrationBean<OAuth2ClientContextFilter> registration = new
-    // FilterRegistrationBean<>();
-    // registration.setFilter(filter);
-    // registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 1);
-    // return registration;
-    // }
-
     @Bean
     public FilterRegistrationBean<CorsFilter> simpleCorsFilter() {
 
@@ -81,12 +88,6 @@ public class OAuth2SsoConfiguration extends WebSecurityConfigurerAdapter {
         FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<>(new CorsFilter(source));
         bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
         return bean;
-    }
-
-    @Bean
-    public AuthorizationHeaderFilter authHeaderFilter(OAuth2AuthorizedClientService clientService) {
-
-        return new AuthorizationHeaderFilter(clientService);
     }
 
     @Bean("userFeignClientInterceptor")

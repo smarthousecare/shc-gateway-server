@@ -23,7 +23,7 @@ public class SwaggerBasePathRewritingFilter extends SendResponseFilter {
 
     private final Logger log = LoggerFactory.getLogger(SwaggerBasePathRewritingFilter.class);
 
-    private ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
 
     @Override
     public String filterType() {

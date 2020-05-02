@@ -1,10 +1,10 @@
 package com.house.care.gatewayserver.config;
 
+import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_DECORATION_FILTER_ORDER;
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_TYPE;
 
 import java.util.Optional;
 
-import org.springframework.core.Ordered;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,8 +12,10 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
@@ -36,7 +38,7 @@ public class AuthorizationHeaderFilter extends ZuulFilter {
     @Override
     public int filterOrder() {
 
-        return Ordered.LOWEST_PRECEDENCE;
+        return PRE_DECORATION_FILTER_ORDER - 1;
     }
 
     @Override
@@ -87,6 +89,17 @@ public class AuthorizationHeaderFilter extends ZuulFilter {
             else {
                 token = details.getTokenValue();
                 tokenType = details.getTokenType();
+            }
+        }
+        else if (authentication instanceof JwtAuthenticationToken) {
+            JwtAuthenticationToken jwtOAuthToken = (JwtAuthenticationToken) authentication;
+            Jwt credentials = jwtOAuthToken.getToken();
+            if (credentials == null) {
+                return Optional.empty();
+            }
+            else {
+                token = credentials.getTokenValue();
+                tokenType = "Bearer";
             }
         }
 

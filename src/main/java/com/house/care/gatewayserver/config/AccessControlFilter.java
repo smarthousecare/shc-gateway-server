@@ -1,5 +1,7 @@
 package com.house.care.gatewayserver.config;
 
+import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_TYPE;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +33,7 @@ public class AccessControlFilter extends ZuulFilter {
     @Override
     public String filterType() {
 
-        return "pre";
+        return PRE_TYPE;
     }
 
     @Override
