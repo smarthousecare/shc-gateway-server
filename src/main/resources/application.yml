@@ -8,9 +8,6 @@ server:
   servlet:
     session:
       persistent: false
-  session:
-    cookie:
-      http-only: true
 
 ribbon:
   eureka:
@@ -37,12 +34,12 @@ hystrix:
             timeoutInMilliseconds: 60000
 
 management:
-  security:
-    roles: ADMIN
-  context-path: /management
   health:
     mail:
       enabled: false # When using the MailService, configure an SMTP server and set this to true
+  endpoints:
+    web:
+      base-path: /management
 
 eureka:
   instance:
@@ -51,21 +48,20 @@ eureka:
     prefer-ip-address: false
     lease-renewal-interval-in-seconds: 5
     lease-expiration-duration-in-seconds: 10
-    status-page-url-path: ${management.context-path}/info
-    health-check-url-path: ${management.context-path}/health
+    status-page-url-path: ${management.endpoints.web.base-path}/info
+    health-check-url-path: ${management.endpoints.web.base-path}/health
     metadata-map:
       zone: primary
       profile: ${spring.profiles.active}
       version: ${info.project.version}
   client:
-    client:
+    enabled: true
+    healthcheck:
       enabled: true
-      healthcheck:
-        enabled: true
-      fetch-registry: true
-      register-with-eureka: true
-      instance-info-replication-interval-seconds: 10
-      registry-fetch-interval-seconds: 10
+    fetch-registry: true
+    register-with-eureka: true
+    instance-info-replication-interval-seconds: 10
+    registry-fetch-interval-seconds: 10
 
 spring:
   application:
@@ -76,13 +72,8 @@ spring:
   main:
     allow-bean-definition-overriding: true
 
-springdoc:
-  api-docs:
-    groups:
-      enabled: true
-
-springfox:
-  documentation:
-    swagger:
-      v2:
-        path: /v3/api-docs
+#springfox:
+#  documentation:
+#    swagger:
+#      v2:
+#        path: /v3/api-docs

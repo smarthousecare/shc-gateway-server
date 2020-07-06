@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.cloud.netflix.zuul.filters.Route;
 import org.springframework.cloud.netflix.zuul.filters.RouteLocator;
 import org.springframework.http.HttpStatus;
@@ -16,12 +14,13 @@ import com.google.common.collect.Lists;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Zuul filter for restricting access to backend micro-services endpoints.
  */
+@Slf4j
 public class AccessControlFilter extends ZuulFilter {
-
-    private final Logger log = LoggerFactory.getLogger(AccessControlFilter.class);
 
     private final RouteLocator routeLocator;
 

@@ -9,7 +9,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsResourceDetails;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.stereotype.Service;
@@ -18,6 +17,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import com.house.care.gatewayserver.service.dto.AuthenticationTokenDTO;
+import com.house.care.gatewayserver.service.dto.SHCClientProperties;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,7 +30,7 @@ public class OktaService {
     private static final String SCOPE = "access";
 
     @Autowired
-    private ClientCredentialsResourceDetails clientCredentialsResourceDetails;
+    private SHCClientProperties shcClientProperties;
 
     @Autowired
     private OAuth2AuthorizedClientService clientService;
@@ -42,11 +42,11 @@ public class OktaService {
         // create form parameters as a MultiValueMap
         MultiValueMap<String, String> formVars = new LinkedMultiValueMap<>();
         formVars.add(OAuth2ParameterNames.GRANT_TYPE, CLIENT_CREDENTIALS);
-        formVars.add(OAuth2ParameterNames.CLIENT_ID, clientCredentialsResourceDetails.getClientId());
-        formVars.add(OAuth2ParameterNames.CLIENT_SECRET, clientCredentialsResourceDetails.getClientSecret());
+        formVars.add(OAuth2ParameterNames.CLIENT_ID, shcClientProperties.getClientId());
+        formVars.add(OAuth2ParameterNames.CLIENT_SECRET, shcClientProperties.getClientSecret());
         formVars.add(OAuth2ParameterNames.SCOPE, SCOPE);
 
-        AuthenticationTokenDTO authenticationToken = restTemplate.postForObject(clientCredentialsResourceDetails.getAccessTokenUri(), formVars,
+        AuthenticationTokenDTO authenticationToken = restTemplate.postForObject(shcClientProperties.getAccessTokenUri(), formVars,
                 AuthenticationTokenDTO.class);
         log.trace("AUTHENTICATION TOKEN = {}", authenticationToken);
         return authenticationToken;

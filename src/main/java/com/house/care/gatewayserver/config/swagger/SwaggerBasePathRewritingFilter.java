@@ -9,6 +9,7 @@ import java.util.zip.GZIPInputStream;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cloud.netflix.zuul.filters.ZuulProperties;
 import org.springframework.cloud.netflix.zuul.filters.post.SendResponseFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,6 +25,11 @@ public class SwaggerBasePathRewritingFilter extends SendResponseFilter {
     private final Logger log = LoggerFactory.getLogger(SwaggerBasePathRewritingFilter.class);
 
     private final ObjectMapper mapper = new ObjectMapper();
+
+    public SwaggerBasePathRewritingFilter(ZuulProperties zuulProperties) {
+
+        super(zuulProperties);
+    }
 
     @Override
     public String filterType() {
@@ -77,8 +83,6 @@ public class SwaggerBasePathRewritingFilter extends SendResponseFilter {
                 map.put("basePath", basePath);
                 map.remove("servers");
                 map.put("host", RequestContext.getCurrentContext().getRequest().getHeader("host"));
-                map.put("swagger", "2.0");
-                map.remove("openapi");
                 log.debug("Swagger-docs: rewritten Base URL with correct micro-service route: {}", basePath);
                 return mapper.writeValueAsString(map);
             }

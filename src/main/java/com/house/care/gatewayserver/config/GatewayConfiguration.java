@@ -1,6 +1,7 @@
 package com.house.care.gatewayserver.config;
 
 import org.springframework.cloud.netflix.zuul.filters.RouteLocator;
+import org.springframework.cloud.netflix.zuul.filters.ZuulProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -15,7 +16,7 @@ public class GatewayConfiguration {
         @Bean
         public SwaggerBasePathRewritingFilter swaggerBasePathRewritingFilter() {
 
-            return new SwaggerBasePathRewritingFilter();
+            return new SwaggerBasePathRewritingFilter(new ZuulProperties());
         }
     }
 

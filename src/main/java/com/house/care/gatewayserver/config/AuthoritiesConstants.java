@@ -5,7 +5,7 @@ package com.house.care.gatewayserver.config;
  */
 public final class AuthoritiesConstants {
 
-    public static final String ADMIN = "ADMIN";
+    public static final String ADMIN = "ROLE_ADMIN";
 
     private AuthoritiesConstants() {
 
