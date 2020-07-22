@@ -71,9 +71,3 @@ spring:
       write_dates_as_timestamps: false
   main:
     allow-bean-definition-overriding: true
-
-#springfox:
-#  documentation:
-#    swagger:
-#      v2:
-#        path: /v3/api-docs

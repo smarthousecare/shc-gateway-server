@@ -6,48 +6,7 @@ level:
 spring:
   profiles:
     active: "dev"
-  security:
-    user:
-      name: admin
-      password: admin
-      roles: USER,ADMIN,SYSADMIN
-    oauth2:
-      client:
-        registration:
-          okta:
-            client-id: 0oa4u7s7jowBgKy6W4x6
-            client-secret: udX0cFsj3UsCznuiFbmE1M04U3_aEVIgSPdmgCL1
-        provider:
-          okta:
-            issuerUri: https://dev-958433.okta.com/oauth2/default
-            authorization-uri: https://dev-958433.okta.com/oauth2/default/v1/authorize
-            token-uri: https://dev-958433.okta.com/oauth2/default/v1/token
-            user-info-uri: https://dev-958433.okta.com/oauth2/default/v1/userinfo
-            jwk-set-uri: https://dev-958433.okta.com/oauth2/default/v1/keys
-            user-name-attribute: sub
-      resourceserver:
-        jwt:
-          issuer-uri: https://dev-958433.okta.com/oauth2/default
-
-eureka:
-  instance:
-    prefer-ip-address: false
-  client:
-    service-url:
-      defaultZone: http://admin:${shc.registry.password}@localhost:8761/eureka/
 
 swagger:
   config:
     refreshrate: 5000
-
-shc:
-  oauth2:
-    client:
-      registration:
-        registrationId: 0oa4u7s7jowBgKy6W4x6
-        accessTokenUri: https://dev-958433.okta.com/oauth2/default/v1/token
-        userAuthorizationUri: https://dev-958433.okta.com/oauth2/default/v1/authorize
-        clientId: 0oa4u7s7jowBgKy6W4x6
-        clientSecret: udX0cFsj3UsCznuiFbmE1M04U3_aEVIgSPdmgCL1
-        scope: openid profile email groups
-        userInfoUri: https://dev-958433.okta.com/oauth2/default/v1/userinfo

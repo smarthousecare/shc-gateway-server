@@ -2,15 +2,11 @@
 # Spring Cloud Config bootstrap configuration for the "prod" profile
 # ===================================================================
 
-shc:
-  registry:
-    password: admin
-
 spring:
   application:
     name: gateway-api
   profiles:
-    active: prod,git
+    active: prod,native
   cloud:
     config:
       uri: http://admin:${shc.registry.password}@localhost:8761/config
@@ -22,7 +18,3 @@ spring:
         locator:
           enabled: true
 
-eureka:
-  client:
-    service-url:
-      defaultZone: http://admin:${shc.registry.password}@localhost:8761/eureka

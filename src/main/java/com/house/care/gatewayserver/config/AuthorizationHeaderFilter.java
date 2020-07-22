@@ -11,6 +11,7 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
@@ -53,21 +54,30 @@ public class AuthorizationHeaderFilter extends ZuulFilter {
 
     private Optional<String> getAuthorizationHeader() {
 
+        String tokenType = null;
+        String tokenValue = null;
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
-        OAuth2AuthorizedClient client = clientService.loadAuthorizedClient(
-                oauthToken.getAuthorizedClientRegistrationId(),
-                oauthToken.getName());
+        if (authentication instanceof OAuth2AuthenticationToken) {
+            OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
 
-        OAuth2AccessToken accessToken = client.getAccessToken();
+            OAuth2AuthorizedClient client = clientService.loadAuthorizedClient(
+                    oauthToken.getAuthorizedClientRegistrationId(),
+                    oauthToken.getName());
 
-        if (accessToken == null) {
-            return Optional.empty();
+            OAuth2AccessToken accessToken = client.getAccessToken();
+            tokenType = accessToken.getTokenType().getValue();
+            tokenValue = accessToken.getTokenValue();
+        }
+        else if (authentication instanceof JwtAuthenticationToken) {
+            JwtAuthenticationToken jwtAuthenticationToken = (JwtAuthenticationToken) authentication;
+            tokenValue = jwtAuthenticationToken.getToken().getTokenValue();
+            tokenType = OAuth2AccessToken.TokenType.BEARER.getValue();
         }
         else {
-            String tokenType = accessToken.getTokenType().getValue();
-            String authorizationHeaderValue = String.format("%s %s", tokenType, accessToken.getTokenValue());
-            return Optional.of(authorizationHeaderValue);
+            return Optional.empty();
         }
+
+        String authorizationHeaderValue = String.format("%s %s", tokenType, tokenValue);
+        return Optional.of(authorizationHeaderValue);
     }
 }

@@ -3,6 +3,7 @@ package com.house.care.gatewayserver.config.swagger;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.zip.GZIPInputStream;
 
@@ -80,9 +81,18 @@ public class SwaggerBasePathRewritingFilter extends SendResponseFilter {
                 LinkedHashMap<String, Object> map = this.mapper.readValue(response, LinkedHashMap.class);
 
                 String basePath = requestUri.replace(DEFAULT_URL, "");
-                map.put("basePath", basePath);
-                map.remove("servers");
-                map.put("host", RequestContext.getCurrentContext().getRequest().getHeader("host"));
+                ArrayList<LinkedHashMap<String, String>> servers = new ArrayList<>();
+                LinkedHashMap<String, String> url = new LinkedHashMap<>();
+                String protocol = RequestContext.getCurrentContext().getRequest().getProtocol();
+                protocol = protocol.toLowerCase().contains("https") ? "https://" : "http://";
+
+                url.put("url", protocol.concat(RequestContext.getCurrentContext().getRequest().getHeader("host").concat(basePath)));
+                servers.add(url);
+                LinkedHashMap<String, String> desription = new LinkedHashMap<>();
+                desription.put("desciption", "Generated Server");
+                servers.add(desription);
+                map.put("servers", servers);
+
                 log.debug("Swagger-docs: rewritten Base URL with correct micro-service route: {}", basePath);
                 return mapper.writeValueAsString(map);
             }
